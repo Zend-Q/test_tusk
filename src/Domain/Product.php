@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace Raketa\BackendTestTask\Repository\Entity;
+namespace Raketa\BackendTestTask\Domain;
 
 readonly class Product
 {
@@ -56,5 +56,17 @@ readonly class Product
     public function getPrice(): float
     {
         return $this->price;
+    }
+
+    public function asArray(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'uuid' => $this->getUuid(),
+            'category' => $this->getCategory(),
+            'description' => $this->getDescription(),
+            'thumbnail' => $this->getThumbnail(),
+            'price' => $this->getPrice(),
+        ];
     }
 }

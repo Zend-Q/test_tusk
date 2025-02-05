@@ -12,7 +12,7 @@ class Connector
 {
     private Redis $redis;
 
-    public function __construct($redis)
+    public function __construct(Redis $redis)
     {
         return $this->redis = $redis;
     }
@@ -20,7 +20,7 @@ class Connector
     /**
      * @throws ConnectorException
      */
-    public function get(Cart $key)
+    public function get(string $key): Cart
     {
         try {
             return unserialize($this->redis->get($key));
@@ -32,16 +32,16 @@ class Connector
     /**
      * @throws ConnectorException
      */
-    public function set(string $key, Cart $value)
+    public function set(string $key, Cart $cartValue): void
     {
         try {
-            $this->redis->setex($key, 24 * 60 * 60, serialize($value));
+            $this->redis->setex($key, 24 * 60 * 60, serialize($cartValue));
         } catch (RedisException $e) {
             throw new ConnectorException('Connector error', $e->getCode(), $e);
         }
     }
 
-    public function has($key): bool
+    public function has(string $key): bool
     {
         return $this->redis->exists($key);
     }

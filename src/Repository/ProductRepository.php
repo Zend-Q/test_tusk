@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace Raketa\BackendTestTask\Repository;
 
 use Doctrine\DBAL\Connection;
-use Raketa\BackendTestTask\Repository\Entity\Product;
+use Raketa\BackendTestTask\Domain\Product;
 
 class ProductRepository
 {
@@ -16,6 +16,9 @@ class ProductRepository
         $this->connection = $connection;
     }
 
+    /**
+     * @throws Exception
+     */
     public function getByUuid(string $uuid): Product
     {
         $row = $this->connection->fetchOne(
@@ -39,7 +42,7 @@ class ProductRepository
         );
     }
 
-    public function make(array $row): Product
+    private function make(array $row): Product
     {
         return new Product(
             $row['id'],

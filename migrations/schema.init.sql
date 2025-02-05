@@ -10,5 +10,3 @@ create table if not exists products
     price float not null comment 'Цена'
 )
     comment 'Товары';
-
-create index is_active_idx on products (is_active);

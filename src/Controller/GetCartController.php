@@ -4,9 +4,9 @@ declare(strict_types = 1);
 
 namespace Raketa\BackendTestTask\Controller;
 
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Raketa\BackendTestTask\Repository\CartManager;
+use Raketa\BackendTestTask\Infrastructure\ConnectorException;
+use Raketa\BackendTestTask\Manager\CartManager;
 use Raketa\BackendTestTask\View\CartView;
 
 readonly class GetCartController
@@ -17,15 +17,15 @@ readonly class GetCartController
     ) {
     }
 
-    public function get(RequestInterface $request): ResponseInterface
+    public function get(): ResponseInterface
     {
-        $response = new JsonResponse();
-        $cart = $this->cartManager->getCart();
-
-        if (! $cart) {
+        $response = new ResponseInterface();
+        try {
+            $cart = $this->cartManager->getCart();
+        } catch (ConnectorException $e) {
             $response->getBody()->write(
                 json_encode(
-                    ['message' => 'Cart not found'],
+                    ['message' => $e->getMessage()],
                     JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
                 )
             );
@@ -33,14 +33,14 @@ readonly class GetCartController
             return $response
                 ->withHeader('Content-Type', 'application/json; charset=utf-8')
                 ->withStatus(404);
-        } else {
-            $response->getBody()->write(
-                json_encode(
-                    $this->cartView->toArray($cart),
-                    JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
-                )
-            );
         }
+
+        $response->getBody()->write(
+            json_encode(
+                $this->cartView->getCart($cart)->asArray(),
+                JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
+            )
+        );
 
         return $response
             ->withHeader('Content-Type', 'application/json; charset=utf-8')

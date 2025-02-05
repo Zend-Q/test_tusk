@@ -14,7 +14,7 @@ class ConnectorFacade
     public ?string $password = null;
     public ?int $dbindex = null;
 
-    public $connector;
+    public Connector $connector;
 
     public function __construct($host, $port, $password, $dbindex)
     {
